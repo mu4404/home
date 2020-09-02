@@ -6,6 +6,7 @@ public class Message {
 	private String guestName;
 	private String password;
 	private String message;
+	
 
 	public int getId() {
 		return id;
@@ -46,4 +47,5 @@ public class Message {
 	public boolean matchPassword(String pwd) {
 		return password != null && password.equals(pwd);
 	}
+
 }

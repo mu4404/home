@@ -34,6 +34,19 @@ public class MessageDao {
 			JdbcUtil.close(pstmt);
 		}
 	}
+	public int update(Connection conn, int messageId, String message) throws SQLException {
+		PreparedStatement pstmt = null;
+		try {
+			pstmt = conn.prepareStatement(
+					"update guestbook_message " + 
+					" set message = ? where message_id = ?");
+			pstmt.setString(1, message);
+			pstmt.setInt(2, messageId);
+			return pstmt.executeUpdate();
+		} finally {
+			JdbcUtil.close(pstmt);
+		}
+	}
 
 	public Message select(Connection conn, int messageId) throws SQLException {
 		PreparedStatement pstmt = null;
@@ -53,6 +66,7 @@ public class MessageDao {
 			JdbcUtil.close(pstmt);
 		}
 	}
+	
 
 	private Message makeMessageFromResultSet(ResultSet rs) throws SQLException {
 		Message message = new Message();
@@ -87,6 +101,31 @@ public class MessageDao {
 					"order by message_id desc limit ?, ?");
 			pstmt.setInt(1, firstRow - 1);
 			pstmt.setInt(2, endRow - firstRow + 1);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				List<Message> messageList = new ArrayList<Message>();
+				do {
+					messageList.add(makeMessageFromResultSet(rs));
+				} while (rs.next());
+				return messageList;
+			} else {
+				return Collections.emptyList();
+			}
+		} finally {
+			JdbcUtil.close(rs);
+			JdbcUtil.close(pstmt);
+		}
+	}
+	
+	public List<Message> findList(Connection conn, String name) 
+			throws SQLException {
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			pstmt = conn.prepareStatement(
+					"select * from guestbook_message where guest_name = ?");
+			pstmt.setString(1,name);
+			
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				List<Message> messageList = new ArrayList<Message>();

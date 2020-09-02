@@ -27,6 +27,10 @@ public class MessageListView {
 		calculatePageTotalCount();
 	}
 
+	public MessageListView(List<Message> messageList) {
+		this.messageList = messageList;
+	}
+
 	private void calculatePageTotalCount() {
 		if (messageTotalCount == 0) {
 			pageTotalCount = 0;
